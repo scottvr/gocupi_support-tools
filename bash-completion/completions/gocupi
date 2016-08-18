@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+# /usr/share/bash-completion/completions/gocupi
+# bugs to scottvr@gocupi.com
+# 
+show_help()
+{
+	RETVAL="$(gocupi help $1)"
+}
+
+_gocupi() 
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="-pause -toimage -tochart -tofile -count -slowfactor -flipx -flipy"
+    cmds="circle crosshatch gcode grid hilbert imagearc imageraster line lissa meanderStipple move parabolic qr setup spiral spiro spool svg text help"
+
+if [[ ${prev} =~ [0-9\.]{1,9} ]] && [[ ${COMP_WORDS[COMP_CWORD-2]} == "svg" ]]; then
+        COMPREPLY=( $(compgen -o plusdirs -f -X '!*.svg' -- ${cur}) )
+   	return 0
+fi
+if [[ ${prev} =~ [0-9\.]{1,9} ]] && [[ ${COMP_WORDS[COMP_CWORD-3]} == "imageraster" ]]; then
+        COMPREPLY=( $(compgen -o plusdirs -f -X '!*.jpg' -- ${cur}) )
+   	return 0
+fi
+
+
+
+
+for x in $cmds
+do
+	case ${x} in
+		${prev})
+		if [[ $cur == "" ]]; then
+			show_help $x
+			printf '\n%s' "${RETVAL}" > /dev/tty
+			echo >/dev/tty
+   			expandedPrompt=$(PS1="$PS1" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
+    			printf '\n%s%s' "$expandedPrompt" "$COMP_LINE" >/dev/tty
+		fi
+		return 0
+		;;
+#		circle)
+#		if [[ $cur == "" ]]; then
+#			RET="$(gocupi help circle)" 
+##			printf '\n%s' "${RET}" > /dev/tty
+#			echo >/dev/tty
+#   			expandedPrompt=$(PS1="$PS1" debian_chroot="$debian_chroot" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
+#    			printf '\n%s%s' "$expandedPrompt" "$COMP_LINE" >/dev/tty
+#		fi
+#		return 0
+#		;;
+
+	esac
+done
+
+    #if [[ ${prev} == "gocupi" ]] && [[ ${cur} == "" ]]; then
+#	#echo "prev: ${prev}"
+	#echo $opts
+#	echo
+	#echo $cmds
+#    fi
+    if [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    else
+	COMPREPLY=( $(compgen -W "${cmds}" -- ${cur}) )
+	return 0
+    fi
+
+}
+complete -o filenames -F _gocupi gocupi

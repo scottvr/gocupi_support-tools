@@ -45,7 +45,7 @@ do
 #		circle)
 #		if [[ $cur == "" ]]; then
 #			RET="$(gocupi help circle)" 
-##			printf '\n%s' "${RET}" > /dev/tty
+#			printf '\n%s' "${RET}" > /dev/tty
 #			echo >/dev/tty
 #   			expandedPrompt=$(PS1="$PS1" debian_chroot="$debian_chroot" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
 #    			printf '\n%s%s' "$expandedPrompt" "$COMP_LINE" >/dev/tty
